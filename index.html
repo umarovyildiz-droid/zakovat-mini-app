@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zakovat Arena Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        .gold-gradient { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .card-bg { background: #1e293b; border: 1px solid #334155; }
+    </style>
+</head>
+<body class="p-4 pb-20">
+    <!-- User Profile Header -->
+    <div class="card-bg rounded-2xl p-4 mb-4 flex justify-between items-center shadow-lg">
+        <div>
+            <h1 id="user-name" class="font-bold text-lg text-amber-400">O'quvchi</h1>
+            <p id="user-school" class="text-xs text-slate-400">Maktab ko'rsatilmadi</p>
+        </div>
+        <div class="gold-gradient px-4 py-2 rounded-xl flex items-center gap-2 shadow-md">
+            <i class="fa-solid fa-coins text-yellow-200"></i>
+            <span id="z-coins" class="font-extrabold text-white text-base">0</span>
+            <span class="text-xs text-yellow-100 font-semibold">Z Coin</span>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex bg-slate-800 p-1 rounded-xl mb-4">
+        <button id="tab-shop-btn" onclick="switchTab('shop')" class="flex-1 py-2 rounded-lg font-bold text-sm bg-amber-500 text-slate-950 transition">🛍️ Do'kon</button>
+        <button id="tab-rank-btn" onclick="switchTab('rank')" class="flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition">🏆 Reyting</button>
+    </div>
+
+    <!-- SHOP SECTION -->
+    <div id="shop-tab" class="grid grid-cols-1 gap-3">
+        <!-- Products will be generated dynamically -->
+    </div>
+
+    <!-- LEADERBOARD SECTION -->
+    <div id="rank-tab" class="hidden space-y-3">
+        <div class="card-bg p-3 rounded-xl flex justify-between items-center border-l-4 border-amber-400">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🥇</span>
+                <div>
+                    <h3 class="font-bold text-sm">3-umumiy o'rta ta'lim maktabi</h3>
+                    <p class="text-xs text-slate-400">Beshariq tumani</p>
+                </div>
+            </div>
+            <span class="font-bold text-amber-400 text-sm">45,200 Z</span>
+        </div>
+        <div class="card-bg p-3 rounded-xl flex justify-between items-center border-l-4 border-slate-400">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🥈</span>
+                <div>
+                    <h3 class="font-bold text-sm">1-IDUM maktabi</h3>
+                    <p class="text-xs text-slate-400">Farg'ona shahri</p>
+                </div>
+            </div>
+            <span class="font-bold text-amber-400 text-sm">38,900 Z</span>
+        </div>
+        <div class="card-bg p-3 rounded-xl flex justify-between items-center border-l-4 border-amber-700">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🥉</span>
+                <div>
+                    <h3 class="font-bold text-sm">15-maktab</h3>
+                    <p class="text-xs text-slate-400">Kokand shahri</p>
+                </div>
+            </div>
+            <span class="font-bold text-amber-400 text-sm">31,500 Z</span>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            if (tg.initDataUnsafe?.user) {
+                document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+            }
+        }
+
+        const products = [
+            { id: 1, name: "Gaming Klaviatura", price: 15000, icon: "⌨️" },
+            { id: 2, name: "Simsiz Quloqchin (Headphones)", price: 15000, icon: "🎧" },
+            { id: 3, name: "Gaming Sichqoncha", price: 10000, icon: "🖱️" },
+            { id: 4, name: "Powerbank 20,000 mAh", price: 12000, icon: "🔋" },
+            { id: 5, name: "Smart Soat (Smartwatch)", price: 18000, icon: "⌚" },
+            { id: 6, name: "Katta Kitoblar To'plami", price: 8000, icon: "📚" },
+            { id: 7, name: "RGB Sichqoncha Gilami", price: 6000, icon: "🖥️" },
+            { id: 8, name: "Bluetooth Dinamik (Kolonka)", price: 14000, icon: "🔊" },
+            { id: 9, name: "Stol Chirog'i (LED Lamp)", price: 7500, icon: "💡" },
+            { id: 10, name: "Brend Maktab Portfeli", price: 11000, icon: "🎒" },
+            { id: 11, name: "USB Flash Drive 128GB", price: 5000, icon: "💾" },
+            { id: 12, name: "Telefon uchun Shtativ", price: 6500, icon: "📱" },
+            { id: 13, name: "Termos Idish", price: 4500, icon: "☕" },
+            { id: 14, name: "Stilus Ruchka", price: 3500, icon: "✏️" },
+            { id: 15, name: "Faxriy Diplom & Medal", price: 3000, icon: "🏅" }
+        ];
+
+        const shopContainer = document.getElementById('shop-tab');
+        products.forEach(p => {
+            shopContainer.innerHTML += `
+                <div class="card-bg p-4 rounded-xl flex items-center justify-between shadow">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">${p.icon}</span>
+                        <div>
+                            <h3 class="font-bold text-sm text-slate-100">${p.name}</h3>
+                            <p class="text-xs text-amber-400 font-bold">${p.price.toLocaleString()} Z Coin</p>
+                        </div>
+                    </div>
+                    <button onclick="buyProduct('${p.name}', ${p.price})" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                        Almashtirish
+                    </button>
+                </div>
+            `;
+        });
+
+        function switchTab(tab) {
+            if(tab === 'shop') {
+                document.getElementById('shop-tab').classList.remove('hidden');
+                document.getElementById('rank-tab').classList.add('hidden');
+                document.getElementById('tab-shop-btn').className = 'flex-1 py-2 rounded-lg font-bold text-sm bg-amber-500 text-slate-950 transition';
+                document.getElementById('tab-rank-btn').className = 'flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition';
+            } else {
+                document.getElementById('shop-tab').classList.add('hidden');
+                document.getElementById('rank-tab').classList.remove('hidden');
+                document.getElementById('tab-rank-btn').className = 'flex-1 py-2 rounded-lg font-bold text-sm bg-amber-500 text-slate-950 transition';
+                document.getElementById('tab-shop-btn').className = 'flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition';
+            }
+        }
+
+        function buyProduct(name, price) {
+            alert(`Siz "${name}" mahsulotiga ariza berdingiz! Ma'lumotlaringiz adminga yuborildi.`);
+        }
+    </script>
+</body>
+</html>
